@@ -1,40 +1,38 @@
 // add middlewares here related to projects
 const Projects = require('./projects-model')
 
-async function validateProjectId(req, res, next) {
+async function validateProjectId(req, res, next){
     try {
         const project = await Projects.get(req.params.id)
-        if(!project) {
-            res.stats(404).json({
-                message: 'Project with the specified id does not exist'
-            })
-        } else {
-            res.project = project
+        if(project){
+            req.project = project
             next()
+        } else {
+            next({
+                status: 404,
+                message: "No project found"
+            })
         }
-    } catch (err) {
-        res.status(500).json({
-            message: 'Problem finding project'
-        })
+    }catch(err){
+        next()
     }
 }
 
-function validateProject(req, res, next) {
-    const { name, description, completed } = req.body
-    if(
-        !name || !name.trim() ||
-        !description || !description.trim() ||
-        completed === undefined
-    ) {
-        res.status(400).json({
-            message: 'Please include all required name, description, and completed fields'
-        })
-
-    } else {
-        req.name = name.trim()
-        req.description = description.trim()
-        next()
+async function validateProject (req, res, next) {
+    try {
+        const {name, description, completed} = req.body 
+        if(!name || !description || completed === undefined){
+            res.status(400).json({
+                message: 'Missing valid information'
+            })
+        } else {
+            next()
+        }
     }
+    catch(err){
+        console.log(err)
+    }
+    
 }
 
 

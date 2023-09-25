@@ -50,7 +50,7 @@ router.delete('/:id', validateActionId, (req, res, next) => {
     .catch(next)
 })
 
-router.use((err, req, res, next) => {
+router.use((err, req, res ) => {
     res.status(err.status || 500).json({
         customMessage: 'actions router error',
         message: err.message,
